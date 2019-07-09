@@ -30,7 +30,9 @@ public class PatternMatching {
      */
     public static List<Integer> kmp(CharSequence pattern, CharSequence text,
                                     CharacterComparator comparator) {
-
+        if (pattern == null) {
+            throw new IllegalArgumentException("Pattern is null.");
+        }
     }
 
     /**
