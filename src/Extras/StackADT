@@ -1,0 +1,50 @@
+public class Stack<T> implements StackADT<T> {
+
+    T[] arr;
+    int top;
+    int size;
+
+    public Stack<T>() {
+        arr = new T[100];
+        size = 0
+    }
+
+    /**
+     * Pushes an item onto the top of this stack.
+     * Throw java.lang.RuntimeException if the array is full.
+     * Do not increase the physical size of the array.
+     */
+    public void push(T item) {
+        if (top == null) {
+            arr[0] =  item;
+            top = 0;
+            size = 1;
+        } else if (size == 100) {
+            throw new RuntimeException();
+        } else {
+            size++;
+            arr[++top] = item;
+        }
+    }
+
+    /**
+     * Removes the item at the top of this stack and returns that object.
+     * Throws java.util.EmptyStackException if the stack is empty.
+     */
+    public void T pop() {
+        if (top == null) {
+            throw new EmptyStackException();
+        } else {
+            size--;
+            arr[top] = null;
+            top--;
+        }
+    }
+
+    /**
+     * Tests if this stack is empty.
+     */
+    public boolean isEmpty() {
+        return top == null;
+    }
+}
