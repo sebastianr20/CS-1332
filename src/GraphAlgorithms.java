@@ -1,7 +1,4 @@
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.HashMap;
 
 /**
@@ -118,7 +115,27 @@ public class GraphAlgorithms {
             throw new IllegalArgumentException("Start not in graph.");
         }
         Map<Vertex<T>, Integer> map = new HashMap<Vertex<T>, Integer>();
-
+        for (Vertex<T> v : graph.getAdjList().keySet()) {
+            map.put(v, Integer.MAX_VALUE);
+        }
+        map.put(start, 0);
+        PriorityQueue<VertexDistance<T>> pq =
+                new PriorityQueue<VertexDistance<T>>();
+        for (VertexDistance<T> vD : graph.getAdjList().get(start)) {
+            pq.add(vD);
+        }
+        pq.add(new VertexDistance<T>(start, 0));
+        while (!pq.isEmpty()) {
+            VertexDistance<T> min = pq.remove();
+            for (VertexDistance<T> next : graph.getAdjList().get(min.getVertex())) {
+                int alt = map.get(min.getVertex()) + next.getDistance();
+                if (alt < map.get(next.getVertex())) {
+                    map.put(next.getVertex(), alt);
+                    pq.add(new VertexDistance<T>(next.getVertex(), alt));
+                }
+            }
+        }
+        return map;
     }
 
 
@@ -160,6 +177,41 @@ public class GraphAlgorithms {
      * @return the MST of the graph or null if there is no valid MST
      */
     public static <T> Set<Edge<T>> prims(Vertex<T> start, Graph<T> graph) {
+        if (start == null) {
+            throw new IllegalArgumentException("Start Vertex is null.");
+        }
+        if (graph == null) {
+            throw new IllegalArgumentException("Graph is null.");
+        }
+        if (!graph.getAdjList().keySet().contains(start)) {
+            throw new IllegalArgumentException("Start not in graph.");
+        }
+        if (graph.getAdjList().keySet().size() < 2) {
+            new HashSet<Edge<T>>();
+        }
+        Set<Vertex<T>> traversed = new HashSet<Vertex<T>>();
+        traversed.add(start);
+        Set<Edge<T>> mst = new HashSet<Edge<T>>();
+        PriorityQueue<Edge<T>> pq = new PriorityQueue<Edge<T>>();
+        for (VertexDistance<T> vD : graph.getAdjList().get(start)) {
+            pq.add(new Edge<T>(start, vD.getVertex(), vD.getDistance()));
+        }
+        while (!pq.isEmpty() && traversed.size() < graph.getAdjList().keySet().size()) {
+            Edge<T> edge = pq.poll();
+            if (edge != null && !mst.contains(edge)) {
+                if (!traversed.contains(edge.getV())) {
+                    mst.add(edge);
+                    mst.add(new Edge<T>(edge.getV(), edge.getU(), edge.getWeight()));
+                    traversed.add(edge.getV());
+                    for (VertexDistance<T> vD : graph.getAdjList().get(edge.getV())) {
+                        pq.add(new Edge<T>(edge.getV(), vD.getVertex(), vD.getDistance()));
+                    }
+                }
+            }
+        }
+        if (traversed.size() == graph.getAdjList().keySet().size()) {
+            return mst;
+        }
         return null;
     }
 }
